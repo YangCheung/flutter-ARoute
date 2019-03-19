@@ -29,6 +29,13 @@ class Collector {
       ClassElement element, ConstantReader annotation, BuildStep buildStep) {
     final String className = element.name;
     final String url = annotation.peek('url')?.stringValue;
+    print('${url} url ---');
+    if (element.constructors.length > 0) {
+      print('constructors displayName = ${element.constructors.first.displayName}');  
+      print('constructors name = ${element.constructors.first.name}');  
+      print('constructors type.parameters = ${element.constructors.first.type.parameters.first.type.name}');  
+    }
+  
     if (url != null) {
       addEntryFromPageConfig(annotation, className);
     }
@@ -43,10 +50,10 @@ class Collector {
     }
 
     if (buildStep.inputId.path.contains('lib/')) {
-      print(buildStep.inputId.path);
       importClazz(
           "package:${buildStep.inputId.package}/${buildStep.inputId.path.replaceFirst('lib/', '')}");
     } else {
+      print('${buildStep.inputId.path} 2222');
       importClazz("${buildStep.inputId.path}");
     }
   }
@@ -56,6 +63,7 @@ class Collector {
     if (url != null) {
       final Map<String, dynamic> map =
           genPageConfigFromConstantReader(reader, className);
+      print('${map} ~~ map != null');
       if (map != null) {
         addEntry("'${url}'", map);
       }
