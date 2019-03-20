@@ -30,21 +30,21 @@ class Collector {
     final String className = element.name;
     final String url = annotation.peek('url')?.stringValue;
     print('${url} url ---');
-    if (element.constructors.length > 0) {
-      print('constructors displayName = ${element.constructors.first.displayName}');  
-      print('constructors name = ${element.constructors.first.name}');  
-      print('constructors type.parameters = ${element.constructors.first.type.parameters.first.type.name}');  
-    }
+    // if (element.constructors.length > 0) {
+    //   print('constructors displayName = ${element.constructors.first.displayName}');  
+    //   print('constructors name = ${element.constructors.first.name}');  
+    //   print('constructors type.parameters = ${element.constructors.first.type.parameters.first.type.name}');  
+    // }
   
     if (url != null) {
-      addEntryFromPageConfig(annotation, className);
+      addEntryFromPageConfig(annotation, element);
     }
     final ConstantReader alias = annotation.peek('alias');
     if (alias != null) {
       final List<DartObject> aliasList = alias.listValue;
       final Function addEntry = (DartObject one) {
         final ConstantReader oneObj = ConstantReader(one);
-        addEntryFromPageConfig(oneObj, className);
+        addEntryFromPageConfig(oneObj, element);
       };
       aliasList.forEach(addEntry);
     }
@@ -53,17 +53,15 @@ class Collector {
       importClazz(
           "package:${buildStep.inputId.package}/${buildStep.inputId.path.replaceFirst('lib/', '')}");
     } else {
-      print('${buildStep.inputId.path} 2222');
       importClazz("${buildStep.inputId.path}");
     }
   }
 
-  void addEntryFromPageConfig(ConstantReader reader, String className) {
+  void addEntryFromPageConfig(ConstantReader reader, ClassElement element) {
     final String url = reader.peek('url')?.stringValue;
     if (url != null) {
       final Map<String, dynamic> map =
-          genPageConfigFromConstantReader(reader, className);
-      print('${map} ~~ map != null');
+          genPageConfigFromConstantReader(reader, element);
       if (map != null) {
         addEntry("'${url}'", map);
       }
@@ -71,9 +69,9 @@ class Collector {
   }
 
   Map<String, dynamic> genPageConfigFromConstantReader(
-      ConstantReader reader, String className) {
+      ConstantReader reader, ClassElement element) {
     final ConstantReader params = reader.peek('params');
-    final Map<String, dynamic> map = <String, dynamic>{wK('clazz'): className};
+    final Map<String, dynamic> map = <String, dynamic>{wK('clazz'): element};
     if (params != null) {
       final Map<String, String> paramsMap = toStringStringMap(params.mapValue);
       map[wK('params')] = "${wK(json.encode(paramsMap))}";

@@ -41,8 +41,7 @@ class ARouteAlias {
 class ARouteOption {
   String urlpattern;
   Map<String, dynamic> params;
-  final dynamic obj;
-  ARouteOption(this.urlpattern, this.params, this.obj);
+  ARouteOption(this.urlpattern, this.params);
 }
 
 enum ARouterResultState { FOUND, REDIRECT, NOT_FOUND }
